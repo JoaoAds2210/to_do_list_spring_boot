@@ -2,6 +2,7 @@ package com.example.to_do_spring.services;
 
 import com.example.to_do_spring.dtos.TaskRequest;
 import com.example.to_do_spring.entity.Task;
+import com.example.to_do_spring.entity.enums.Status;
 import com.example.to_do_spring.repository.TaskRepository;
 import org.springframework.stereotype.Service;
 
@@ -37,7 +38,7 @@ public class TaskServices {
     public Task updateTask(Long id, TaskRequest updatedTask) {
         Task task = findById(id);
         task.setDescription(updatedTask.description());
-        task.setConcluido(updatedTask.concluido());
+        task.setStatus(updatedTask.concluido() ? Status.APPROVED : Status.PENDING);
         return repository.save(task);
     }
 }

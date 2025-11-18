@@ -2,7 +2,7 @@ package com.example.to_do_spring.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.engine.spi.Status;
+import com.example.to_do_spring.entity.enums.Status;
 
 @Entity
 @Table(name = "tasks")
@@ -21,7 +21,7 @@ public class Task {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private Status status = Status.SAVING;
+    private Status status = Status.PENDING;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
