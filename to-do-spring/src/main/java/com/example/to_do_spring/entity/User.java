@@ -43,6 +43,12 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Roles role = Roles.USER;
 
+    public User(String username, String senha, Roles role){
+        this.username = username;
+        this.senha = senha;
+        this.role = role;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         if(this.role == Roles.ADMIN) return List.of(new SimpleGrantedAuthority("ROLE_ADMIN"), new SimpleGrantedAuthority("ROLE_USER"));
