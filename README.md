@@ -49,10 +49,6 @@ POST   /api/tasks - /api/users
 PUT    /api/tasks/{id} - /api/users{id}
 PATCH  /api/tasks/{id}/status 
 DELETE /api/tasks/{id} - /api/users
-
-
-Se o projeto inclui autenticação:
-
 POST   /api/auth/register
 POST   /api/auth/login
 
