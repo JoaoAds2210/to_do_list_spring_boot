@@ -2,16 +2,12 @@ package com.example.to_do_spring.controller;
 import com.example.to_do_spring.dtos.UserRequest;
 import com.example.to_do_spring.dtos.UserResponse;
 import com.example.to_do_spring.entity.User;
-import com.example.to_do_spring.exceptions.BadRequestException;
 import com.example.to_do_spring.services.UserServices;
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 import java.util.stream.Collectors;
 import io.swagger.v3.oas.annotations.Operation;
@@ -19,17 +15,15 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 @RestController
 @RequestMapping("/usuarios")
-@AllArgsConstructor
-@Getter
-@Setter
 @Tag(name = "Usuários", description = "Endpoints de gerenciamento de usuários")
 public class UserController {
 
-    private final UserServices services;
+    @Autowired
+    private UserServices services;
+
 
     @PostMapping
     @Operation(
@@ -47,8 +41,7 @@ public class UserController {
 
         UserResponse response = new UserResponse(
                 saved.getId(),
-                saved.getUsername(),
-                saved.getCpf()
+                saved.getUsername()
         );
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
@@ -82,7 +75,7 @@ public class UserController {
     public ResponseEntity<List<UserResponse>> findAll() {
         List<UserResponse> users = services.findAll()
                 .stream()
-                .map(user -> new UserResponse(user.getId(), user.getUsername(), user.getCpf()))
+                .map(user -> new UserResponse(user.getId(), user.getUsername()))
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(users);
@@ -113,8 +106,7 @@ public class UserController {
 
         UserResponse response = new UserResponse(
                 updated.getId(),
-                updated.getUsername(),
-                updated.getCpf()
+                updated.getUsername()
         );
 
         return ResponseEntity.ok(response);

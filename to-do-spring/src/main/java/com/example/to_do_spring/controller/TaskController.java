@@ -5,7 +5,7 @@ import com.example.to_do_spring.entity.Task;
 import com.example.to_do_spring.entity.enums.Status;
 import com.example.to_do_spring.services.TaskServices;
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,11 +17,17 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/tasks")
-@AllArgsConstructor
+
 @Tag(name = "Tarefas", description = "Endpoints de gerenciamento de tarefas")
 public class TaskController {
 
-    private final TaskServices services;
+    @Autowired
+    private TaskServices services;
+
+
+    public TaskController(TaskServices services) {
+        this.services = services;
+    }
 
     @PostMapping
     @Operation(

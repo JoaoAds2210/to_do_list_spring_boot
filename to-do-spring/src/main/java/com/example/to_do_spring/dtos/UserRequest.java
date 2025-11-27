@@ -1,7 +1,7 @@
 package com.example.to_do_spring.dtos;
 
 import jakarta.validation.constraints.NotBlank;
-import org.hibernate.validator.constraints.br.CPF;
+
 
 public record UserRequest(
 
@@ -12,7 +12,6 @@ public record UserRequest(
         String senha,
 
         @NotBlank(message = "O CPF é obrigatório.")
-        @CPF(message = "CPF inválido.")
         String cpf
 
 ) {}

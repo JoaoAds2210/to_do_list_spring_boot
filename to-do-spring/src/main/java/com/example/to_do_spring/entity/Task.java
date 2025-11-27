@@ -1,13 +1,13 @@
 package com.example.to_do_spring.entity;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.*;
 import com.example.to_do_spring.entity.enums.Status;
 
 @Entity
 @Table(name = "tasks")
-@AllArgsConstructor
-@NoArgsConstructor
+@RequiredArgsConstructor
 @Getter
 @Setter
 public class Task {
@@ -25,5 +25,6 @@ public class Task {
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
+    @Schema(hidden = true)
     private User user;
 }

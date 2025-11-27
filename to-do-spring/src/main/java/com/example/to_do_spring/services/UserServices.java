@@ -4,9 +4,10 @@ import com.example.to_do_spring.entity.User;
 import com.example.to_do_spring.exceptions.BadRequestException;
 import com.example.to_do_spring.exceptions.NotFoundException;
 import com.example.to_do_spring.repository.UserRepository;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -16,13 +17,13 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-@AllArgsConstructor
 @Getter
 @Setter
 public class UserServices implements UserDetailsService {
-
-    private final UserRepository repositories;
-    private final PasswordEncoder encoder;
+    @Autowired
+    private UserRepository repositories;
+    @Autowired
+    private PasswordEncoder encoder;
 
     // Validações de negócio
     private void validateUsername(String username) {
@@ -86,6 +87,7 @@ public class UserServices implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return repositories.findByUsername(username);
+        return repositories.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado: " + username));
     }
 }
