@@ -19,10 +19,6 @@ public class Task {
     @Column(name = "description", nullable = false)
     private String description;
 
-    @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    private Status status = Status.PENDING;
-
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     @Schema(hidden = true)

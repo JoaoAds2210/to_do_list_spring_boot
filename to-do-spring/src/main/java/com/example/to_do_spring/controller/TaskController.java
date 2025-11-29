@@ -1,9 +1,12 @@
 package com.example.to_do_spring.controller;
 import com.example.to_do_spring.dtos.TaskRequest;
 import com.example.to_do_spring.dtos.TaskResponse;
+import com.example.to_do_spring.dtos.UserResponse;
 import com.example.to_do_spring.entity.Task;
+import com.example.to_do_spring.entity.User;
 import com.example.to_do_spring.entity.enums.Status;
 import com.example.to_do_spring.services.TaskServices;
+import com.example.to_do_spring.services.UserServices;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,21 +16,16 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/tasks")
-
 @Tag(name = "Tarefas", description = "Endpoints de gerenciamento de tarefas")
 public class TaskController {
 
     @Autowired
     private TaskServices services;
-
-
-    public TaskController(TaskServices services) {
-        this.services = services;
-    }
 
     @PostMapping
     @Operation(
@@ -36,11 +34,7 @@ public class TaskController {
     )
     @ApiResponse(responseCode = "201", description = "Tarefa criada")
     public ResponseEntity<TaskResponse> createTask(@Valid @RequestBody TaskRequest request) {
-        Task task = new Task();
-        task.setDescription(request.description());
-        task.setStatus(request.concluido() ? Status.APPROVED : Status.PENDING);
-
-        Task savedTask = services.createTask(task);
+        Task savedTask = services.createTask(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(toResponse(savedTask));
     }
 
@@ -93,7 +87,7 @@ public class TaskController {
     }
 
     private TaskResponse toResponse(Task task) {
-        boolean concluido = task.getStatus() == Status.APPROVED;
+        boolean concluido = task.getId() != 0;
         return new TaskResponse(task.getId(), task.getDescription(), concluido);
     }
 }

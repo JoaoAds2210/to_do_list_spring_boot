@@ -44,6 +44,7 @@ public class SecurityConfig {
                     authorize.requestMatchers(HttpMethod.POST, "/auth/login").permitAll();
                     authorize.requestMatchers(HttpMethod.POST, "/auth/register").permitAll();
                     authorize.requestMatchers("/usuarios/**").permitAll();
+                    authorize.requestMatchers("/tasks/**").permitAll();
                     authorize.anyRequest().authenticated();
                 })
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)

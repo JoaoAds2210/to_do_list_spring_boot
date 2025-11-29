@@ -7,6 +7,7 @@ public record TaskRequest (
 
         @NotBlank(message = "A descrição da tarefa é obrigatória.")
         String description,
-        boolean concluido
+        @NotBlank(message = "CPF é obrigatório, pois precisa informar o usuário.")
+        String cpf
 ) {}
 

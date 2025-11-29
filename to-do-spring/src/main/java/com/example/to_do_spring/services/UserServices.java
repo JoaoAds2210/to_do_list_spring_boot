@@ -1,11 +1,12 @@
 package com.example.to_do_spring.services;
-import com.example.to_do_spring.dtos.UserRequest;
+import com.example.to_do_spring.dtos.UserDTO;
+import com.example.to_do_spring.dtos.UserResponse;
 import com.example.to_do_spring.entity.User;
 import com.example.to_do_spring.exceptions.BadRequestException;
 import com.example.to_do_spring.exceptions.NotFoundException;
+import com.example.to_do_spring.mapper.UserMapper;
 import com.example.to_do_spring.repository.UserRepository;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,6 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Getter
@@ -24,6 +26,8 @@ public class UserServices implements UserDetailsService {
     private UserRepository repositories;
     @Autowired
     private PasswordEncoder encoder;
+    @Autowired
+    private UserMapper userMapper;
 
     // Validações de negócio
     private void validateUsername(String username) {
@@ -32,9 +36,6 @@ public class UserServices implements UserDetailsService {
         }
         if (!username.matches(".*[A-Z].*")) {
             throw new BadRequestException("O nome deve conter ao menos uma letra maiúscula.");
-        }
-        if (!username.matches(".*[0-9].*")) {
-            throw new BadRequestException("O nome deve conter ao menos um número.");
         }
     }
 
@@ -48,46 +49,58 @@ public class UserServices implements UserDetailsService {
     }
 
     // CRUD
-    public User createUser(UserRequest request){
-        validateUsername(request.username());
+    public UserDTO createUser(UserDTO request){
+        validateUsername(request.userName());
         validatePassword(request.senha());
 
-        if (repositories.findByCpf(request.cpf()).isPresent()) {
+        if (findByCPF(request.cpf()).equals(request.cpf())) {
             throw new BadRequestException("CPF já cadastrado.");
         }
 
-        User user = new User();
-        user.setUsername(request.username());
-        user.setCpf(request.cpf());
-        user.setSenha(encoder.encode(request.senha()));
+        User user = userMapper.converterUserDTOToUser(request);
 
-        return repositories.save(user);
+        User user1 = repositories.save(user);
+
+        UserDTO userResponse = userMapper.converterUserToUserDTO(user1);
+
+        return userResponse;
     }
 
     public List<User> findAll() {
         return repositories.findAll();
     }
 
-    public User findById(Long id){
-        return repositories.findById(id)
-                .orElseThrow(() -> new NotFoundException("Não há usuário com esse ID: " + id));
+    public UserDTO findById(Long id){
+        User user = repositories.findById(id).orElseThrow(() -> new NotFoundException("Não há usuário com esse ID: " + id));
+
+        UserDTO response = userMapper.converterUserToUserDTO(user);
+
+        return response;
     }
 
-    public void deleteById(Long id){
-        User user = findById(id); // lança NotFoundException se não existir
-        repositories.delete(user);
-    }
-
-    public User updateUser(Long id, UserRequest updateUser) {
-        User user = findById(id); // lança NotFoundException se não existir
-        user.setUsername(updateUser.username());
-        user.setCpf(updateUser.cpf());
-        return repositories.save(user);
-    }
+//    public void deleteById(Long id){
+//        User user = findById(id); // lança NotFoundException se não existir
+//        repositories.delete(user);
+//    }
+//
+//    public User updateUser(Long id, UserDTO updateUser) {
+//        User user = findById(id); // lança NotFoundException se não existir
+//        user.setUsername(updateUser.userName());
+//        user.setCpf(updateUser.cpf());
+//        return repositories.save(user);
+//    }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return repositories.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado: " + username));
+    }
+
+    public UserDTO findByCPF (String cpf) {
+        Optional<User> user = repositories.findByCpf(cpf);
+
+        UserDTO response = userMapper.converterUserToUserDTO(user.get());
+
+        return response;
     }
 }
